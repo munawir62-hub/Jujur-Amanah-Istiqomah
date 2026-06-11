@@ -1,0 +1,517 @@
+<!doctype html>
+<html lang="id" class="h-full">
+ <head><script src="/_sdk/telemetry_sdk.js"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MPI Jujur, Amanah, Istiqomah</title>
+  <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+  <script src="https://cdn.jsdelivr.net/npm/lucide@0.263.0/dist/umd/lucide.min.js"></script>
+  <script src="/_sdk/element_sdk.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700;800&amp;family=Source+Sans+3:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet">
+  <style>
+    html, body { height: 100%; margin: 0; }
+    body { font-family: 'Source Sans 3', sans-serif; }
+    .heading-font { font-family: 'Playfair Display', serif; }
+    .nav-btn.active { background: var(--primary); color: white; }
+    .nav-btn { transition: all 0.2s; }
+    .fade-in { animation: fadeIn 0.4s ease; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    .card-hover { transition: transform 0.2s, box-shadow 0.2s; }
+    .card-hover:hover { transform: translateY(-3px); box-shadow: 0 8px 25px rgba(0,0,0,0.1); }
+    :root { --primary: #1B6B4A; --secondary: #F4EDE4; --text: #2D2D2D; --accent: #D4A853; --surface: #FFFFFF; }
+    .quiz-option { cursor: pointer; border: 2px solid #e5e7eb; border-radius: 12px; padding: 12px 16px; transition: all 0.2s; }
+    .quiz-option:hover { border-color: var(--primary); background: #f0fdf4; }
+    .quiz-option.correct { border-color: #16a34a; background: #dcfce7; }
+    .quiz-option.wrong { border-color: #dc2626; background: #fee2e2; }
+    .progress-dot { width: 10px; height: 10px; border-radius: 50%; background: #d1d5db; transition: background 0.3s; }
+    .progress-dot.active { background: var(--primary); }
+    .peta-node { background: white; border: 2px solid var(--primary); border-radius: 12px; padding: 10px 18px; font-weight: 600; font-size: 14px; }
+    .peta-line { background: var(--primary); }
+  </style>
+  <style>body { box-sizing: border-box; }</style>
+  <script src="/_sdk/data_sdk.js" type="text/javascript"></script>
+ </head>
+ <body class="h-full bg-[#F4EDE4] text-[#2D2D2D] overflow-hidden">
+  <div id="app" class="h-full w-full flex flex-col"><!-- Header -->
+   <header class="bg-[#1B6B4A] text-white px-4 py-3 flex items-center justify-between shadow-lg flex-shrink-0">
+    <div class="flex items-center gap-3">
+     <div class="w-9 h-9 bg-[#D4A853] rounded-lg flex items-center justify-center"><i data-lucide="book-open" class="w-5 h-5 text-white"></i>
+     </div>
+     <div>
+      <h1 id="mainTitle" class="heading-font text-lg font-bold leading-tight">Jujur, Amanah &amp; Istiqomah</h1>
+      <p class="text-xs opacity-80">PAI Kelas 7 SMP · Semester 1</p>
+     </div>
+    </div>
+    <div class="text-xs bg-white/20 px-2 py-1 rounded">
+     MPI
+    </div>
+   </header><!-- Navigation -->
+   <nav class="bg-white border-b px-2 py-2 flex gap-1 overflow-x-auto flex-shrink-0" id="navBar"><button class="nav-btn active text-xs px-3 py-1.5 rounded-full whitespace-nowrap font-medium" data-page="0">Pendahuluan</button> <button class="nav-btn text-xs px-3 py-1.5 rounded-full whitespace-nowrap font-medium" data-page="1">Peta Konsep</button> <button class="nav-btn text-xs px-3 py-1.5 rounded-full whitespace-nowrap font-medium" data-page="2">Materi</button> <button class="nav-btn text-xs px-3 py-1.5 rounded-full whitespace-nowrap font-medium" data-page="3">Contoh</button> <button class="nav-btn text-xs px-3 py-1.5 rounded-full whitespace-nowrap font-medium" data-page="4">Kiat</button> <button class="nav-btn text-xs px-3 py-1.5 rounded-full whitespace-nowrap font-medium" data-page="5">Hikmah</button> <button class="nav-btn text-xs px-3 py-1.5 rounded-full whitespace-nowrap font-medium" data-page="6">Kuis</button> <button class="nav-btn text-xs px-3 py-1.5 rounded-full whitespace-nowrap font-medium" data-page="7">Latihan</button> <button class="nav-btn text-xs px-3 py-1.5 rounded-full whitespace-nowrap font-medium" data-page="8">Refleksi</button>
+   </nav><!-- Content -->
+   <main class="flex-1 overflow-y-auto p-4" id="content"></main><!-- Footer Nav -->
+   <footer class="bg-white border-t px-4 py-2 flex justify-between items-center flex-shrink-0"><button id="prevBtn" onclick="navigate(-1)" class="flex items-center gap-1 text-sm font-medium text-[#1B6B4A] disabled:opacity-30"> <i data-lucide="chevron-left" class="w-4 h-4"></i> Sebelumnya </button>
+    <div class="flex gap-1" id="dots"></div><button id="nextBtn" onclick="navigate(1)" class="flex items-center gap-1 text-sm font-medium text-[#1B6B4A] disabled:opacity-30"> Selanjutnya <i data-lucide="chevron-right" class="w-4 h-4"></i> </button>
+   </footer>
+  </div>
+  <script>
+    let currentPage = 0;
+    const totalPages = 9;
+
+    const pages = [
+      // 0 - Pendahuluan
+      () => `<div class="fade-in max-w-2xl mx-auto">
+        <div class="bg-white rounded-2xl p-6 shadow-sm mb-4">
+          <div class="text-center mb-5">
+            <div class="w-16 h-16 bg-[#1B6B4A]/10 rounded-full flex items-center justify-center mx-auto mb-3">
+              <i data-lucide="sparkles" class="w-8 h-8 text-[#1B6B4A]"></i>
+            </div>
+            <h2 class="heading-font text-2xl font-bold text-[#1B6B4A] mb-2">Pendahuluan</h2>
+            <p class="text-sm text-gray-500">Kompetensi Dasar 1.2 & 2.2</p>
+          </div>
+          <div class="bg-[#F4EDE4] rounded-xl p-4 mb-4">
+            <h3 class="font-bold text-sm mb-2 text-[#1B6B4A]">🎯 Tujuan Pembelajaran</h3>
+            <ul class="text-sm space-y-2 text-gray-700">
+              <li>• Memahami pengertian jujur, amanah, dan istiqomah</li>
+              <li>• Menjelaskan dalil naqli tentang jujur, amanah, dan istiqomah</li>
+              <li>• Menunjukkan contoh perilaku jujur, amanah, dan istiqomah</li>
+              <li>• Membiasakan perilaku jujur, amanah, dan istiqomah dalam kehidupan</li>
+            </ul>
+          </div>
+          <div class="border-l-4 border-[#D4A853] pl-4 py-2">
+            <p class="text-sm italic text-gray-600">"Sesungguhnya kejujuran membawa kepada kebaikan, dan kebaikan membawa ke surga."</p>
+            <p class="text-xs text-gray-400 mt-1">— HR. Bukhari & Muslim</p>
+          </div>
+        </div>
+        <div class="bg-white rounded-2xl p-5 shadow-sm">
+          <h3 class="font-bold text-sm mb-3">📚 Cakupan Materi</h3>
+          <div class="grid grid-cols-3 gap-3">
+            <div class="text-center p-3 bg-green-50 rounded-xl"><div class="text-2xl mb-1">🤝</div><p class="text-xs font-semibold">Jujur</p></div>
+            <div class="text-center p-3 bg-amber-50 rounded-xl"><div class="text-2xl mb-1">🔑</div><p class="text-xs font-semibold">Amanah</p></div>
+            <div class="text-center p-3 bg-blue-50 rounded-xl"><div class="text-2xl mb-1">⛰️</div><p class="text-xs font-semibold">Istiqomah</p></div>
+          </div>
+        </div>
+      </div>`,
+
+      // 1 - Peta Konsep
+      () => `<div class="fade-in max-w-2xl mx-auto">
+        <div class="bg-white rounded-2xl p-6 shadow-sm">
+          <h2 class="heading-font text-xl font-bold text-[#1B6B4A] text-center mb-6">Peta Konsep</h2>
+          <div class="flex flex-col items-center gap-2">
+            <div class="peta-node bg-[#1B6B4A] !text-white !border-[#1B6B4A] text-center">Akhlak Terpuji</div>
+            <div class="peta-line w-0.5 h-6"></div>
+            <div class="flex items-center gap-0">
+              <div class="peta-line h-0.5 w-16 hidden md:block"></div>
+              <div class="peta-line h-0.5 w-8 md:hidden"></div>
+              <div class="peta-line w-0.5 h-4"></div>
+              <div class="peta-line h-0.5 w-[calc(50%-2px)]"></div>
+            </div>
+            <div class="grid grid-cols-3 gap-3 w-full">
+              <div class="flex flex-col items-center gap-2">
+                <div class="peta-node text-center text-xs md:text-sm">Jujur<br><span class="text-[10px] text-gray-500">(Ash-Shidqu)</span></div>
+                <div class="peta-line w-0.5 h-4"></div>
+                <div class="text-[10px] text-center bg-green-50 border border-green-200 rounded-lg p-2">
+                  <p>• Perkataan</p><p>• Perbuatan</p><p>• Niat hati</p>
+                </div>
+              </div>
+              <div class="flex flex-col items-center gap-2">
+                <div class="peta-node text-center text-xs md:text-sm">Amanah<br><span class="text-[10px] text-gray-500">(Al-Amanah)</span></div>
+                <div class="peta-line w-0.5 h-4"></div>
+                <div class="text-[10px] text-center bg-amber-50 border border-amber-200 rounded-lg p-2">
+                  <p>• Tanggung jawab</p><p>• Dapat dipercaya</p><p>• Menunaikan janji</p>
+                </div>
+              </div>
+              <div class="flex flex-col items-center gap-2">
+                <div class="peta-node text-center text-xs md:text-sm">Istiqomah<br><span class="text-[10px] text-gray-500">(Al-Istiqamah)</span></div>
+                <div class="peta-line w-0.5 h-4"></div>
+                <div class="text-[10px] text-center bg-blue-50 border border-blue-200 rounded-lg p-2">
+                  <p>• Konsisten</p><p>• Teguh pendirian</p><p>• Tidak goyah</p>
+                </div>
+              </div>
+            </div>
+            <div class="mt-4 w-full bg-[#F4EDE4] rounded-xl p-3 text-center">
+              <p class="text-xs font-semibold text-[#1B6B4A]">Landasan: Al-Qur'an & Hadis</p>
+              <p class="text-[10px] text-gray-500 mt-1">QS. Az-Zumar: 33 · QS. Al-Mu'minun: 8 · QS. Fussilat: 30</p>
+            </div>
+          </div>
+        </div>
+      </div>`,
+
+      // 2 - Materi
+      () => `<div class="fade-in max-w-2xl mx-auto space-y-4">
+        <h2 class="heading-font text-xl font-bold text-[#1B6B4A] text-center">Pembahasan Materi</h2>
+        
+        <div class="bg-white rounded-2xl p-5 shadow-sm card-hover">
+          <div class="flex items-center gap-3 mb-3">
+            <div class="w-10 h-10 bg-green-100 rounded-xl flex items-center justify-center text-xl">🤝</div>
+            <h3 class="font-bold text-[#1B6B4A]">1. Jujur (Ash-Shidqu)</h3>
+          </div>
+          <p class="text-sm text-gray-700 mb-3">Jujur adalah kesesuaian antara ucapan dan perbuatan dengan kenyataan. Jujur merupakan sifat terpuji yang menjadi pondasi akhlak mulia seorang muslim.</p>
+          <div class="bg-green-50 rounded-lg p-3 mb-3">
+            <p class="text-xs font-semibold text-green-800 mb-1">📖 Dalil:</p>
+            <p class="text-xs italic text-green-700">"Dan orang yang membawa kebenaran (Muhammad) dan membenarkannya, mereka itulah orang-orang yang bertakwa." (QS. Az-Zumar: 33)</p>
+          </div>
+          <div class="text-xs text-gray-600">
+            <p class="font-semibold mb-1">Macam-macam jujur:</p>
+            <p>• <strong>Jujur dalam perkataan</strong> — berkata sesuai kenyataan</p>
+            <p>• <strong>Jujur dalam perbuatan</strong> — tidak berpura-pura</p>
+            <p>• <strong>Jujur dalam niat</strong> — ikhlas karena Allah</p>
+          </div>
+        </div>
+
+        <div class="bg-white rounded-2xl p-5 shadow-sm card-hover">
+          <div class="flex items-center gap-3 mb-3">
+            <div class="w-10 h-10 bg-amber-100 rounded-xl flex items-center justify-center text-xl">🔑</div>
+            <h3 class="font-bold text-[#1B6B4A]">2. Amanah (Al-Amanah)</h3>
+          </div>
+          <p class="text-sm text-gray-700 mb-3">Amanah artinya dapat dipercaya atau terpercaya. Orang yang amanah akan menjaga dan menunaikan segala sesuatu yang dipercayakan kepadanya.</p>
+          <div class="bg-amber-50 rounded-lg p-3 mb-3">
+            <p class="text-xs font-semibold text-amber-800 mb-1">📖 Dalil:</p>
+            <p class="text-xs italic text-amber-700">"Dan orang-orang yang memelihara amanat dan janjinya." (QS. Al-Mu'minun: 8)</p>
+          </div>
+          <div class="text-xs text-gray-600">
+            <p class="font-semibold mb-1">Ciri orang amanah:</p>
+            <p>• Menepati janji yang telah dibuat</p>
+            <p>• Menjaga titipan orang lain</p>
+            <p>• Bertanggung jawab atas tugas yang diberikan</p>
+          </div>
+        </div>
+
+        <div class="bg-white rounded-2xl p-5 shadow-sm card-hover">
+          <div class="flex items-center gap-3 mb-3">
+            <div class="w-10 h-10 bg-blue-100 rounded-xl flex items-center justify-center text-xl">⛰️</div>
+            <h3 class="font-bold text-[#1B6B4A]">3. Istiqomah (Al-Istiqamah)</h3>
+          </div>
+          <p class="text-sm text-gray-700 mb-3">Istiqomah artinya teguh pendirian, konsisten, dan tidak berbelok dari jalan yang benar. Istiqomah berarti terus-menerus berada di jalan yang lurus.</p>
+          <div class="bg-blue-50 rounded-lg p-3 mb-3">
+            <p class="text-xs font-semibold text-blue-800 mb-1">📖 Dalil:</p>
+            <p class="text-xs italic text-blue-700">"Sesungguhnya orang-orang yang berkata 'Tuhan kami adalah Allah' kemudian mereka beristiqomah, maka malaikat-malaikat akan turun kepada mereka." (QS. Fussilat: 30)</p>
+          </div>
+          <div class="text-xs text-gray-600">
+            <p class="font-semibold mb-1">Bentuk istiqomah:</p>
+            <p>• Konsisten beribadah kepada Allah</p>
+            <p>• Teguh dalam kebenaran meski banyak godaan</p>
+            <p>• Tidak mudah terpengaruh hal negatif</p>
+          </div>
+        </div>
+      </div>`,
+
+      // 3 - Contoh Perilaku
+      () => `<div class="fade-in max-w-2xl mx-auto space-y-4">
+        <h2 class="heading-font text-xl font-bold text-[#1B6B4A] text-center">Contoh Perilaku</h2>
+        
+        <div class="bg-white rounded-2xl p-5 shadow-sm">
+          <h3 class="font-semibold text-sm text-green-700 mb-3 flex items-center gap-2"><span class="text-lg">🤝</span> Contoh Perilaku Jujur</h3>
+          <div class="space-y-2">
+            ${['Mengerjakan ulangan tanpa mencontek','Berkata benar meski sulit','Mengembalikan barang yang bukan miliknya','Mengakui kesalahan yang diperbuat','Tidak melebih-lebihkan cerita'].map(t => `<div class="flex items-start gap-2 text-sm"><span class="text-green-500 mt-0.5">✓</span><p>${t}</p></div>`).join('')}
+          </div>
+        </div>
+
+        <div class="bg-white rounded-2xl p-5 shadow-sm">
+          <h3 class="font-semibold text-sm text-amber-700 mb-3 flex items-center gap-2"><span class="text-lg">🔑</span> Contoh Perilaku Amanah</h3>
+          <div class="space-y-2">
+            ${['Menjaga barang titipan teman dengan baik','Menyelesaikan tugas piket tepat waktu','Menyampaikan pesan dengan benar','Menjaga rahasia yang dipercayakan','Mengembalikan pinjaman sesuai janji'].map(t => `<div class="flex items-start gap-2 text-sm"><span class="text-amber-500 mt-0.5">✓</span><p>${t}</p></div>`).join('')}
+          </div>
+        </div>
+
+        <div class="bg-white rounded-2xl p-5 shadow-sm">
+          <h3 class="font-semibold text-sm text-blue-700 mb-3 flex items-center gap-2"><span class="text-lg">⛰️</span> Contoh Perilaku Istiqomah</h3>
+          <div class="space-y-2">
+            ${['Salat lima waktu secara rutin','Rajin belajar setiap hari','Tetap berbuat baik meski tidak dipuji','Konsisten membaca Al-Quran','Tidak mudah putus asa saat menghadapi kesulitan'].map(t => `<div class="flex items-start gap-2 text-sm"><span class="text-blue-500 mt-0.5">✓</span><p>${t}</p></div>`).join('')}
+          </div>
+        </div>
+      </div>`,
+
+      // 4 - Kiat
+      () => `<div class="fade-in max-w-2xl mx-auto space-y-4">
+        <h2 class="heading-font text-xl font-bold text-[#1B6B4A] text-center">Kiat Menumbuhkan</h2>
+        
+        <div class="bg-white rounded-2xl p-5 shadow-sm">
+          <h3 class="font-semibold text-sm mb-4 text-[#1B6B4A]">💡 Tips Membiasakan Jujur, Amanah & Istiqomah</h3>
+          <div class="space-y-3">
+            ${[
+              {n:'1',t:'Niatkan karena Allah',d:'Tanamkan niat bahwa semua kebaikan dilakukan karena Allah SWT.'},
+              {n:'2',t:'Mulai dari hal kecil',d:'Biasakan jujur dari perkataan sehari-hari dan hal-hal sederhana.'},
+              {n:'3',t:'Bergaul dengan orang baik',d:'Pilih teman yang mendukung perilaku positif.'},
+              {n:'4',t:'Muhasabah (introspeksi diri)',d:'Evaluasi diri setiap hari apakah sudah jujur, amanah, dan istiqomah.'},
+              {n:'5',t:'Berdoa memohon kekuatan',d:'Minta pertolongan Allah agar dimudahkan dalam beristiqomah.'},
+              {n:'6',t:'Buat target harian',d:'Tetapkan target kecil untuk dijalankan secara konsisten.'}
+            ].map(i => `<div class="flex gap-3 items-start">
+              <div class="w-7 h-7 bg-[#1B6B4A] text-white rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0">${i.n}</div>
+              <div><p class="text-sm font-semibold">${i.t}</p><p class="text-xs text-gray-500">${i.d}</p></div>
+            </div>`).join('')}
+          </div>
+        </div>
+
+        <div class="bg-gradient-to-r from-[#1B6B4A] to-[#2a8f65] rounded-2xl p-5 text-white">
+          <p class="text-sm font-semibold mb-2">🌟 Ingat!</p>
+          <p class="text-xs opacity-90">"Amalan yang paling dicintai Allah adalah yang dilakukan secara terus-menerus (istiqomah) meskipun sedikit." — HR. Bukhari & Muslim</p>
+        </div>
+      </div>`,
+
+      // 5 - Hikmah
+      () => `<div class="fade-in max-w-2xl mx-auto space-y-4">
+        <h2 class="heading-font text-xl font-bold text-[#1B6B4A] text-center">Hikmah & Manfaat</h2>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+          ${[
+            {icon:'💚',title:'Dicintai Allah & Manusia',desc:'Orang jujur dan amanah akan mendapat kepercayaan dari semua orang.'},
+            {icon:'🕊️',title:'Hati Tenang & Tentram',desc:'Kejujuran membuat hati menjadi tenang, tidak ada beban kebohongan.'},
+            {icon:'🌟',title:'Derajat Tinggi di Sisi Allah',desc:'Allah meninggikan derajat orang-orang yang istiqomah di jalan-Nya.'},
+            {icon:'🤲',title:'Doa Dikabulkan',desc:'Orang yang jujur dan amanah lebih mudah dikabulkan doanya.'},
+            {icon:'🏆',title:'Sukses Dunia & Akhirat',desc:'Kejujuran membawa keberuntungan di dunia dan keselamatan di akhirat.'},
+            {icon:'👥',title:'Dipercaya Masyarakat',desc:'Menjadi pribadi yang dihormati dan dijadikan panutan.'}
+          ].map(h => `<div class="bg-white rounded-xl p-4 shadow-sm card-hover">
+            <div class="text-2xl mb-2">${h.icon}</div>
+            <h4 class="font-bold text-sm text-[#1B6B4A] mb-1">${h.title}</h4>
+            <p class="text-xs text-gray-600">${h.desc}</p>
+          </div>`).join('')}
+        </div>
+
+        <div class="bg-white rounded-2xl p-5 shadow-sm border-l-4 border-[#D4A853]">
+          <p class="text-sm italic text-gray-700">"Hendaklah kalian berlaku jujur, karena kejujuran membawa pada kebaikan dan kebaikan membawa ke surga. Seseorang yang senantiasa jujur dan berusaha jujur, akan ditulis di sisi Allah sebagai orang yang jujur (shiddiq)."</p>
+          <p class="text-xs text-gray-400 mt-2">— HR. Bukhari & Muslim</p>
+        </div>
+      </div>`,
+
+      // 6 - Kuis
+      () => {
+        return `<div class="fade-in max-w-2xl mx-auto">
+          <div class="bg-white rounded-2xl p-5 shadow-sm">
+            <h2 class="heading-font text-xl font-bold text-[#1B6B4A] text-center mb-1">Kuis Interaktif</h2>
+            <p class="text-xs text-gray-500 text-center mb-4">Pilih jawaban yang paling tepat!</p>
+            <div id="quizContainer"></div>
+          </div>
+        </div>`;
+      },
+
+      // 7 - Latihan Soal
+      () => `<div class="fade-in max-w-2xl mx-auto space-y-4">
+        <h2 class="heading-font text-xl font-bold text-[#1B6B4A] text-center">Latihan Soal</h2>
+        <div class="bg-white rounded-2xl p-5 shadow-sm">
+          <p class="text-sm text-gray-600 mb-4">Jawablah pertanyaan berikut dengan singkat dan jelas!</p>
+          <div class="space-y-4" id="latihanContainer">
+            ${[
+              'Jelaskan pengertian jujur menurut bahasa dan istilah!',
+              'Sebutkan 3 macam kejujuran beserta contohnya!',
+              'Tuliskan dalil naqli tentang amanah beserta artinya!',
+              'Apa perbedaan antara amanah dan jujur?',
+              'Bagaimana cara membiasakan diri untuk istiqomah dalam beribadah?'
+            ].map((q, i) => `<div class="border rounded-xl p-3">
+              <p class="text-sm font-semibold text-[#1B6B4A] mb-2">${i+1}. ${q}</p>
+              <textarea class="w-full border rounded-lg p-2 text-sm h-20 resize-none focus:outline-none focus:ring-2 focus:ring-[#1B6B4A]/30" placeholder="Tulis jawabanmu di sini..."></textarea>
+            </div>`).join('')}
+          </div>
+          <button onclick="checkLatihan()" class="mt-4 w-full bg-[#1B6B4A] text-white py-2.5 rounded-xl font-semibold text-sm hover:bg-[#145538] transition">Selesai & Periksa</button>
+          <div id="latihanResult" class="mt-3"></div>
+        </div>
+      </div>`,
+
+      // 8 - Refleksi
+      () => `<div class="fade-in max-w-2xl mx-auto space-y-4">
+        <h2 class="heading-font text-xl font-bold text-[#1B6B4A] text-center">Lembar Refleksi</h2>
+        <div class="bg-white rounded-2xl p-5 shadow-sm">
+          <p class="text-sm text-gray-600 mb-4">Renungkan dan jawablah pertanyaan berikut dengan jujur dari hatimu. Tidak ada jawaban benar atau salah.</p>
+          
+          <div class="space-y-4">
+            <div class="bg-[#F4EDE4] rounded-xl p-4">
+              <p class="text-sm font-semibold mb-2">🪞 Seberapa sering kamu berkata jujur hari ini?</p>
+              <div class="flex gap-2" id="refleksi1">
+                ${['Selalu','Sering','Kadang','Jarang'].map((v,i) => `<button onclick="selectRefleksi(this)" class="text-xs px-3 py-1.5 border rounded-full hover:bg-[#1B6B4A] hover:text-white transition">${v}</button>`).join('')}
+              </div>
+            </div>
+
+            <div class="bg-[#F4EDE4] rounded-xl p-4">
+              <p class="text-sm font-semibold mb-2">🔑 Apakah kamu sudah menjalankan amanah yang diberikan?</p>
+              <div class="flex gap-2" id="refleksi2">
+                ${['Selalu','Sering','Kadang','Jarang'].map(v => `<button onclick="selectRefleksi(this)" class="text-xs px-3 py-1.5 border rounded-full hover:bg-[#1B6B4A] hover:text-white transition">${v}</button>`).join('')}
+              </div>
+            </div>
+
+            <div class="bg-[#F4EDE4] rounded-xl p-4">
+              <p class="text-sm font-semibold mb-2">⛰️ Hal apa yang ingin kamu istiqomahkan mulai hari ini?</p>
+              <textarea class="w-full border rounded-lg p-2 text-sm h-16 resize-none focus:outline-none focus:ring-2 focus:ring-[#1B6B4A]/30 bg-white" placeholder="Tuliskan komitmenmu..."></textarea>
+            </div>
+
+            <div class="bg-[#F4EDE4] rounded-xl p-4">
+              <p class="text-sm font-semibold mb-2">✨ Apa yang menjadi tantangan terberatmu dalam bersikap jujur?</p>
+              <textarea class="w-full border rounded-lg p-2 text-sm h-16 resize-none focus:outline-none focus:ring-2 focus:ring-[#1B6B4A]/30 bg-white" placeholder="Ceritakan pengalamanmu..."></textarea>
+            </div>
+
+            <div class="bg-[#F4EDE4] rounded-xl p-4">
+              <p class="text-sm font-semibold mb-2">🤲 Doa dan harapanmu:</p>
+              <textarea class="w-full border rounded-lg p-2 text-sm h-16 resize-none focus:outline-none focus:ring-2 focus:ring-[#1B6B4A]/30 bg-white" placeholder="Tuliskan doa dan harapanmu..."></textarea>
+            </div>
+          </div>
+
+          <button onclick="submitRefleksi()" class="mt-4 w-full bg-[#D4A853] text-white py-2.5 rounded-xl font-semibold text-sm hover:bg-[#b8913f] transition">Simpan Refleksi</button>
+          <div id="refleksiResult" class="mt-3"></div>
+        </div>
+      </div>`
+    ];
+
+    // Quiz data
+    const quizData = [
+      { q: 'Apa arti jujur dalam bahasa Arab?', o: ['Ash-Shidqu','Al-Amanah','Al-Istiqamah','As-Sabru'], a: 0 },
+      { q: 'Dalil tentang istiqomah terdapat dalam surah...', o: ['Al-Baqarah: 1','Fussilat: 30','Al-Fatihah: 5','An-Nisa: 58'], a: 1 },
+      { q: 'Berikut yang termasuk ciri orang munafik menurut hadis adalah...', o: ['Rajin beribadah','Jika berjanji menepati','Jika dipercaya berkhianat','Selalu berkata benar'], a: 2 },
+      { q: 'Istiqomah artinya...', o: ['Sabar','Teguh pendirian','Dermawan','Pemaaf'], a: 1 },
+      { q: 'Contoh perilaku amanah di sekolah adalah...', o: ['Mencontek saat ujian','Menyelesaikan tugas piket','Membolos pelajaran','Berbohong pada guru'], a: 1 }
+    ];
+
+    let quizAnswers = {};
+    let quizScore = 0;
+
+    function renderPage() {
+      const content = document.getElementById('content');
+      content.innerHTML = pages[currentPage]();
+      lucide.createIcons();
+      updateNav();
+      if (currentPage === 6) renderQuiz();
+    }
+
+    function renderQuiz() {
+      const container = document.getElementById('quizContainer');
+      if (!container) return;
+      quizAnswers = {};
+      quizScore = 0;
+      let html = '';
+      quizData.forEach((q, qi) => {
+        html += `<div class="mb-5 pb-4 ${qi < quizData.length-1 ? 'border-b' : ''}">
+          <p class="text-sm font-semibold mb-3">${qi+1}. ${q.q}</p>
+          <div class="space-y-2">
+            ${q.o.map((opt, oi) => `<div class="quiz-option" data-q="${qi}" data-o="${oi}" onclick="selectQuiz(this, ${qi}, ${oi})">${String.fromCharCode(65+oi)}. ${opt}</div>`).join('')}
+          </div>
+          <div id="feedback-${qi}" class="mt-2 text-xs"></div>
+        </div>`;
+      });
+      html += `<button onclick="submitQuiz()" class="w-full bg-[#1B6B4A] text-white py-2.5 rounded-xl font-semibold text-sm hover:bg-[#145538] transition">Lihat Nilai</button>`;
+      html += `<div id="quizResult" class="mt-3 text-center"></div>`;
+      container.innerHTML = html;
+    }
+
+    function selectQuiz(el, qi, oi) {
+      const siblings = el.parentElement.querySelectorAll('.quiz-option');
+      siblings.forEach(s => { s.classList.remove('correct','wrong'); s.style.borderColor = '#e5e7eb'; s.style.background = ''; });
+      el.style.borderColor = 'var(--primary)';
+      el.style.background = '#f0fdf4';
+      quizAnswers[qi] = oi;
+    }
+
+    function submitQuiz() {
+      quizScore = 0;
+      quizData.forEach((q, qi) => {
+        const options = document.querySelectorAll(`[data-q="${qi}"]`);
+        const feedback = document.getElementById(`feedback-${qi}`);
+        options.forEach(o => {
+          const oi = parseInt(o.dataset.o);
+          if (oi === q.a) { o.classList.add('correct'); o.classList.remove('wrong'); }
+          else if (quizAnswers[qi] === oi) { o.classList.add('wrong'); o.classList.remove('correct'); }
+        });
+        if (quizAnswers[qi] === q.a) {
+          quizScore++;
+          feedback.innerHTML = '<span class="text-green-600">✓ Benar!</span>';
+        } else {
+          feedback.innerHTML = `<span class="text-red-600">✗ Jawaban yang benar: ${String.fromCharCode(65+q.a)}. ${q.o[q.a]}</span>`;
+        }
+      });
+      const result = document.getElementById('quizResult');
+      const pct = (quizScore/quizData.length)*100;
+      result.innerHTML = `<div class="bg-${pct >= 60 ? 'green' : 'red'}-50 rounded-xl p-4 mt-3">
+        <p class="text-lg font-bold text-${pct >= 60 ? 'green' : 'red'}-700">Nilai: ${quizScore}/${quizData.length} (${pct}%)</p>
+        <p class="text-xs text-gray-600 mt-1">${pct >= 80 ? 'Excellent! Kamu memahami materi dengan baik! 🌟' : pct >= 60 ? 'Bagus! Terus tingkatkan pemahamanmu! 👍' : 'Ayo pelajari kembali materinya! 💪'}</p>
+      </div>`;
+    }
+
+    function checkLatihan() {
+      const textareas = document.querySelectorAll('#latihanContainer textarea');
+      let filled = 0;
+      textareas.forEach(t => { if(t.value.trim()) filled++; });
+      const result = document.getElementById('latihanResult');
+      if (filled === textareas.length) {
+        result.innerHTML = '<div class="bg-green-50 text-green-700 rounded-xl p-3 text-sm text-center">✓ Semua soal telah dijawab. Barakallahu fiik! 🌟</div>';
+      } else {
+        result.innerHTML = `<div class="bg-amber-50 text-amber-700 rounded-xl p-3 text-sm text-center">⚠️ Kamu baru menjawab ${filled} dari ${textareas.length} soal. Lengkapi jawabanmu!</div>`;
+      }
+    }
+
+    function selectRefleksi(btn) {
+      const siblings = btn.parentElement.querySelectorAll('button');
+      siblings.forEach(s => { s.classList.remove('bg-[#1B6B4A]','text-white'); });
+      btn.classList.add('bg-[#1B6B4A]','text-white');
+    }
+
+    function submitRefleksi() {
+      const result = document.getElementById('refleksiResult');
+      result.innerHTML = '<div class="bg-green-50 text-green-700 rounded-xl p-3 text-sm text-center">✓ Refleksimu telah disimpan. Semoga kamu selalu istiqomah dalam kebaikan! 🤲</div>';
+    }
+
+    function updateNav() {
+      document.querySelectorAll('.nav-btn').forEach((btn, i) => {
+        btn.classList.toggle('active', i === currentPage);
+      });
+      document.getElementById('prevBtn').disabled = currentPage === 0;
+      document.getElementById('nextBtn').disabled = currentPage === totalPages - 1;
+      // dots
+      const dots = document.getElementById('dots');
+      dots.innerHTML = Array.from({length: totalPages}, (_, i) => `<div class="progress-dot ${i === currentPage ? 'active' : ''}"></div>`).join('');
+    }
+
+    function navigate(dir) {
+      const next = currentPage + dir;
+      if (next >= 0 && next < totalPages) { currentPage = next; renderPage(); }
+    }
+
+    document.getElementById('navBar').addEventListener('click', e => {
+      const btn = e.target.closest('[data-page]');
+      if (btn) { currentPage = parseInt(btn.dataset.page); renderPage(); }
+    });
+
+    // Element SDK
+    const defaultConfig = {
+      main_title: 'Jujur, Amanah & Istiqomah',
+      background_color: '#F4EDE4',
+      surface_color: '#FFFFFF',
+      text_color: '#2D2D2D',
+      primary_color: '#1B6B4A',
+      accent_color: '#D4A853',
+      font_family: 'Playfair Display',
+      font_size: 16
+    };
+
+    function applyConfig(config) {
+      document.getElementById('mainTitle').textContent = config.main_title || defaultConfig.main_title;
+      document.body.style.backgroundColor = config.background_color || defaultConfig.background_color;
+      document.documentElement.style.setProperty('--primary', config.primary_color || defaultConfig.primary_color);
+      document.documentElement.style.setProperty('--secondary', config.background_color || defaultConfig.background_color);
+      document.documentElement.style.setProperty('--accent', config.accent_color || defaultConfig.accent_color);
+      document.querySelector('header').style.backgroundColor = config.primary_color || defaultConfig.primary_color;
+      const font = config.font_family || defaultConfig.font_family;
+      document.querySelectorAll('.heading-font').forEach(el => { el.style.fontFamily = `${font}, serif`; });
+      const size = config.font_size || defaultConfig.font_size;
+      document.body.style.fontSize = `${size}px`;
+    }
+
+    window.elementSdk.init({
+      defaultConfig,
+      onConfigChange: async (config) => { applyConfig(config); },
+      mapToCapabilities: (config) => ({
+        recolorables: [
+          { get: () => config.background_color || defaultConfig.background_color, set: v => { config.background_color = v; window.elementSdk.setConfig({background_color: v}); }},
+          { get: () => config.surface_color || defaultConfig.surface_color, set: v => { config.surface_color = v; window.elementSdk.setConfig({surface_color: v}); }},
+          { get: () => config.text_color || defaultConfig.text_color, set: v => { config.text_color = v; window.elementSdk.setConfig({text_color: v}); }},
+          { get: () => config.primary_color || defaultConfig.primary_color, set: v => { config.primary_color = v; window.elementSdk.setConfig({primary_color: v}); }},
+          { get: () => config.accent_color || defaultConfig.accent_color, set: v => { config.accent_color = v; window.elementSdk.setConfig({accent_color: v}); }}
+        ],
+        borderables: [],
+        fontEditable: { get: () => config.font_family || defaultConfig.font_family, set: v => { config.font_family = v; window.elementSdk.setConfig({font_family: v}); }},
+        fontSizeable: { get: () => config.font_size || defaultConfig.font_size, set: v => { config.font_size = v; window.elementSdk.setConfig({font_size: v}); }}
+      }),
+      mapToEditPanelValues: (config) => new Map([
+        ['main_title', config.main_title || defaultConfig.main_title]
+      ])
+    });
+
+    renderPage();
+  </script>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a09cfa5db8ccce02',t:'MTc4MTE0Mjc2Mw=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
